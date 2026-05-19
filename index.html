@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <title>MEME FIGHTER 2D</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <!--
+        BUG CORRIGIDO: canvas era width="900" height="500"
+        mas constants.js define CANVAS_WIDTH=1280 e CANVAS_HEIGHT=720.
+        Isso fazia a tela parecer ampliada/cortada E escondia
+        a barra de vida do P2 (que era desenhada em x=960, fora dos 900px).
+    -->
+    <canvas id="game" width="1280" height="720"></canvas>
+
+    <script src="src/constants.js"></script>
+    <script src="src/controls.js"></script>
+    <script src="src/collision.js"></script>
+    <script src="src/effects.js"></script>
+    <script src="src/ui.js"></script>
+    <script src="src/fighter.js"></script>
+    <script src="src/main.js"></script>
+</body>
+</html>
