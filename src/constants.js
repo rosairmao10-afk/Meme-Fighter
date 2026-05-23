@@ -82,7 +82,7 @@ const CHARACTERS = [
         attackSprite:  'assets/effects/hit-apenas-um-cara-tranquilo.png',
         specialSprite: 'assets/effects/ult-apenas-um-cara-tranquilo.png',
         specialName:   'Cara Tranquila',
-        displayWidth:  170,
+        displayWidth:  140,
         stats: {
             velocidade:  50,
             poder:       50,
