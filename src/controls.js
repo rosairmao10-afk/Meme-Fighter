@@ -181,6 +181,8 @@ function initMobileControls() {
         }, { passive: false });
     }
 
+    // btn-attack  → ataque LEVE  (attack  = KeyR no PC)
+    // btn-heavy   → ataque PESADO (attack2 = KeyF no PC)
     bindActionBtn('btn-attack', 'attack');
     bindActionBtn('btn-heavy',  'attack2');
     bindActionBtn('btn-shield', 'shield');
