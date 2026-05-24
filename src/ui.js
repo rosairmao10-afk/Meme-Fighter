@@ -430,11 +430,11 @@ function drawControls(ctx) {
 
         const mobileControls = [
             { icon: '🕹️', desc: 'Joystick esq. — Andar' },
-            { icon: '↑',  desc: 'Botão PULAR' },
-            { icon: '🔴', desc: 'ATQ LEVE — Ataque rápido' },
-            { icon: '🟠', desc: 'ATQ PESADO — Ataque forte' },
-            { icon: '🛡',  desc: 'ESCUDO — Bloquear' },
-            { icon: '⚡', desc: 'ULT — Ultimate (barra cheia)' },
+            { icon: '↑',  desc: 'Botão PULAR (abaixo do joystick)' },
+            { icon: '⚡', desc: 'ATQ LEVE — Golpe rápido (verde)' },
+            { icon: '💥', desc: 'ATQ PESADO — Golpe forte (laranja)' },
+            { icon: '🛡',  desc: 'ESCUDO — Bloquear (azul)' },
+            { icon: '★',  desc: 'ULTIMATE — Especial (dourado)' },
         ];
 
         let cy = 155;
