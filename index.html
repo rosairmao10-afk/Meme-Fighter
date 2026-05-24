@@ -2,18 +2,43 @@
 <html lang="pt-br">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>MEME FIGHTER 2D</title>
     <link rel="stylesheet" href="style.css">
     <link rel="icon" type="image/png" href="logo.png">
 </head>
 <body>
-    <!--
-        BUG CORRIGIDO: canvas era width="900" height="500"
-        mas constants.js define CANVAS_WIDTH=1280 e CANVAS_HEIGHT=720.
-        Isso fazia a tela parecer ampliada/cortada E escondia
-        a barra de vida do P2 (que era desenhada em x=960, fora dos 900px).
-    -->
-    <canvas id="game" width="1280" height="720"></canvas>
+
+    <!-- Aviso de girar o celular -->
+    <div id="rotate-msg">
+        <div style="font-size: 48px;">📱➡️</div>
+        <div>Gire o celular para<br>modo paisagem!</div>
+    </div>
+
+    <!-- Wrapper com borda animada -->
+    <div id="canvas-wrapper">
+        <canvas id="game" width="1280" height="720"></canvas>
+    </div>
+
+    <!-- Controles mobile (só visíveis no mobile em luta) -->
+    <div id="mobile-controls">
+        <!-- Joystick esquerdo -->
+        <div id="joystick-zone">
+            <div id="joystick-base"></div>
+            <div id="joystick-knob"></div>
+        </div>
+
+        <!-- Botão de pulo -->
+        <div id="btn-jump" class="mobile-btn">↑<br>PULAR</div>
+
+        <!-- Botões de ação (direita) -->
+        <div id="action-buttons">
+            <div id="btn-attack"  class="mobile-btn">ATQ<br>LEVE</div>
+            <div id="btn-heavy"   class="mobile-btn">ATQ<br>PESADO</div>
+            <div id="btn-shield"  class="mobile-btn">🛡<br>ESC</div>
+            <div id="btn-ult"     class="mobile-btn">⚡<br>ULT</div>
+        </div>
+    </div>
 
     <script src="src/constants.js"></script>
     <script src="src/controls.js"></script>
