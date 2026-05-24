@@ -1,14 +1,14 @@
 body {
     background: #0a0a12;
     display: flex;
+    flex-direction: column;
     justify-content: center;
     align-items: center;
-    height: 100vh;
+    min-height: 100vh;
     margin: 0;
     overflow: hidden;
 }
 
-/* Gradiente animado de fundo */
 body::before {
     content: '';
     position: absolute;
@@ -19,14 +19,13 @@ body::before {
     pointer-events: none;
 }
 
-/* Wrapper para o efeito de borda completa */
+/* Wrapper com borda animada */
 #canvas-wrapper {
     position: relative;
     display: inline-block;
     border-radius: 6px;
 }
 
-/* Borda animada com gradiente */
 #canvas-wrapper::before {
     content: '';
     position: absolute;
@@ -40,7 +39,6 @@ body::before {
     z-index: 0;
 }
 
-/* Glow atrás da borda */
 #canvas-wrapper::after {
     content: '';
     position: absolute;
@@ -75,157 +73,205 @@ canvas {
     background: #000;
 }
 
-/* ===================== */
-/* CONTROLES MOBILE      */
-/* ===================== */
+/* ===================================== */
+/* MOBILE — PORTRAIT (celular em pé)     */
+/* ===================================== */
+
+/* No mobile, o canvas ocupa toda a largura */
+@media (max-width: 768px) {
+    body {
+        justify-content: flex-start;
+        overflow-y: auto;
+        background: #000;
+    }
+
+    #canvas-wrapper {
+        width: 100vw;
+        display: block;
+        border-radius: 0;
+    }
+
+    /* Borda animada adaptada para mobile */
+    #canvas-wrapper::before {
+        inset: -2px;
+        border-radius: 0;
+    }
+    #canvas-wrapper::after {
+        inset: -5px;
+        border-radius: 0;
+    }
+
+    canvas {
+        width: 100vw !important;
+        height: auto !important;
+        aspect-ratio: 16/9;
+        border-radius: 0;
+    }
+}
+
+/* ===================================== */
+/* PAINEL DE CONTROLES MOBILE            */
+/* ===================================== */
 
 #mobile-controls {
     display: none;
-    position: fixed;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    height: 180px;
-    pointer-events: none;
-    z-index: 100;
-    user-select: none;
-    -webkit-user-select: none;
+    width: 100vw;
+    background: #0d0d18;
+    border-top: 2px solid #333;
+    padding: 10px 0 16px;
+    box-sizing: border-box;
+    position: relative;
+    flex-shrink: 0;
+    /* grade: joystick à esq, botões de ação à dir */
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0;
+    /* altura do painel */
+    min-height: 220px;
 }
 
 #mobile-controls.active {
-    display: block;
+    display: flex;
+}
+
+/* ---- LADO ESQUERDO: joystick + pulo ---- */
+#left-panel {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+    padding-left: 18px;
+    width: 48%;
 }
 
 /* Joystick */
 #joystick-zone {
-    position: absolute;
-    left: 20px;
-    bottom: 20px;
     width: 140px;
     height: 140px;
-    pointer-events: all;
+    position: relative;
+    touch-action: none;
 }
 
 #joystick-base {
     position: absolute;
     inset: 0;
     border-radius: 50%;
-    background: rgba(255,255,255,0.08);
-    border: 2px solid rgba(255,255,255,0.25);
+    background: rgba(255,255,255,0.07);
+    border: 2px solid rgba(255,255,255,0.22);
 }
 
 #joystick-knob {
     position: absolute;
-    width: 52px;
-    height: 52px;
+    width: 54px;
+    height: 54px;
     border-radius: 50%;
-    background: rgba(255,255,255,0.35);
+    background: rgba(255,255,255,0.30);
     border: 2px solid rgba(255,255,255,0.6);
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
-    transition: none;
 }
 
-/* Botão de pulo (cima, separado) */
+/* Botão pulo — abaixo do joystick, grande */
 #btn-jump {
-    position: absolute;
-    left: 170px;
-    bottom: 100px;
-    width: 56px;
+    width: 80px;
     height: 56px;
-    border-radius: 50%;
-    background: rgba(100,200,255,0.25);
-    border: 2px solid rgba(100,200,255,0.7);
-    pointer-events: all;
+    border-radius: 14px;
+    background: rgba(80,200,255,0.18);
+    border: 2px solid rgba(80,200,255,0.75);
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 22px;
-    color: rgba(100,200,255,0.9);
+    flex-direction: column;
     font-family: monospace;
     font-weight: bold;
+    font-size: 22px;
+    color: rgba(130,210,255,0.95);
+    touch-action: manipulation;
+    -webkit-tap-highlight-color: transparent;
+    user-select: none;
+    gap: 2px;
 }
 
-/* Botões de ação (direita) */
-#action-buttons {
-    position: absolute;
-    right: 20px;
-    bottom: 20px;
-    width: 180px;
-    height: 140px;
-    pointer-events: all;
+#btn-jump span {
+    font-size: 10px;
+    font-weight: normal;
+    opacity: 0.8;
+}
+
+/* ---- LADO DIREITO: botões de ação ---- */
+#right-panel {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    grid-template-rows: 1fr 1fr;
+    gap: 10px;
+    padding-right: 18px;
+    width: 48%;
+    justify-items: center;
 }
 
 .mobile-btn {
-    position: absolute;
+    width: 85px;
+    height: 85px;
     border-radius: 50%;
     display: flex;
     align-items: center;
     justify-content: center;
+    flex-direction: column;
     font-family: monospace;
     font-weight: bold;
     font-size: 11px;
     text-align: center;
-    border: 2px solid;
-    pointer-events: all;
+    border: 2.5px solid;
     touch-action: manipulation;
     -webkit-tap-highlight-color: transparent;
-    transition: opacity 0.1s;
+    user-select: none;
     line-height: 1.2;
+    gap: 3px;
+    transition: opacity 0.08s, transform 0.08s;
 }
 
-.mobile-btn:active { opacity: 0.6; }
+.mobile-btn:active {
+    opacity: 0.55;
+    transform: scale(0.93);
+}
 
+.mobile-btn .btn-icon {
+    font-size: 24px;
+    line-height: 1;
+}
+
+/* Ataque LEVE — verde (golpe rápido, tecla R) */
 #btn-attack {
-    width: 62px; height: 62px;
-    right: 0; bottom: 0;
-    background: rgba(255,68,68,0.25);
-    border-color: rgba(255,68,68,0.8);
-    color: rgba(255,100,100,0.95);
+    background: rgba(68,220,68,0.20);
+    border-color: rgba(68,220,68,0.85);
+    color: rgba(100,240,100,0.95);
 }
 
+/* Ataque PESADO — laranja (golpe forte, tecla F) */
 #btn-heavy {
-    width: 58px; height: 58px;
-    right: 70px; bottom: 0;
-    background: rgba(255,153,0,0.25);
-    border-color: rgba(255,153,0,0.8);
-    color: rgba(255,180,50,0.95);
+    background: rgba(255,140,0,0.20);
+    border-color: rgba(255,140,0,0.85);
+    color: rgba(255,170,50,0.95);
 }
 
+/* Escudo — azul */
 #btn-shield {
-    width: 54px; height: 54px;
-    right: 0; bottom: 70px;
-    background: rgba(68,170,255,0.25);
-    border-color: rgba(68,170,255,0.8);
-    color: rgba(100,180,255,0.95);
+    background: rgba(68,140,255,0.20);
+    border-color: rgba(68,140,255,0.85);
+    color: rgba(120,180,255,0.95);
 }
 
+/* Ultimate — dourado */
 #btn-ult {
-    width: 58px; height: 58px;
-    right: 65px; bottom: 65px;
-    background: rgba(255,204,0,0.25);
-    border-color: rgba(255,204,0,0.8);
-    color: rgba(255,215,50,0.95);
+    background: rgba(255,204,0,0.20);
+    border-color: rgba(255,204,0,0.85);
+    color: rgba(255,220,60,0.95);
 }
 
-/* Landscape obrigatório no mobile */
-#rotate-msg {
-    display: none;
-    position: fixed;
-    inset: 0;
-    background: #000;
-    z-index: 9999;
-    align-items: center;
-    justify-content: center;
-    flex-direction: column;
-    color: white;
-    font-family: monospace;
-    font-size: 20px;
-    text-align: center;
-    gap: 16px;
-}
-
-@media (max-width: 900px) and (orientation: portrait) {
-    #rotate-msg { display: flex; }
+/* Efeito "pressionado" nos botões */
+.mobile-btn.pressed {
+    opacity: 0.5;
+    transform: scale(0.91);
 }
