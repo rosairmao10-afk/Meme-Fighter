@@ -40,7 +40,7 @@ class Fighter {
             console.warn('ERRO AO CARREGAR:', this.image.src);
         };
 
-        this.attackBox = { x: 0, y: 0, w: 170, h: 170, active: false };
+        this.attackBox  = { x: 0, y: 0, w: 170, h: 170, active: false };
         this.attack2Box = { x: 0, y: 0, w: 280, h: 155, active: false };
 
         this.hitTimer = 0;
@@ -58,23 +58,148 @@ class Fighter {
         this.isUsingUltimate = false;
         this.ultimateAge     = 0;
         this.facing          = 1;
+
+        // Flag de BOT (usado no mobile para P2)
+        this.isBot = false;
+        this._botTimer  = 0;
+        this._botAction = null;
+        this._botTarget = null;
     }
 
     get isAttacking() {
         return this.attackBox.active || this.attack2Box.active || this.isUsingUltimate;
     }
 
+    // =============================================
+    // IA DO BOT — lógica simples mas funcional
+    // =============================================
+
+    _updateBot() {
+        if (!this._botTarget) return;
+
+        const target = this._botTarget;
+        const dist   = Math.abs((this.x + this.width / 2) - (target.x + target.width / 2));
+        const onGround = (this.y + this.height >= GROUND_Y - 2);
+
+        this._botTimer--;
+
+        // Fila de ação: decide o que fazer a cada ~30-60 frames
+        if (this._botTimer <= 0) {
+            this._botTimer = 20 + Math.floor(Math.random() * 40);
+
+            const roll = Math.random();
+
+            if (dist > 300) {
+                // Longe: andar em direção ao player
+                this._botAction = 'approach';
+            } else if (dist < 120 && !this.isAttacking) {
+                // Perto: atacar ou usar escudo
+                if (this.energy >= MAX_ENERGY && roll < 0.2) {
+                    this._botAction = 'ultimate';
+                } else if (roll < 0.5) {
+                    this._botAction = 'attack';
+                } else if (roll < 0.7) {
+                    this._botAction = 'heavy';
+                } else {
+                    this._botAction = 'approach';
+                }
+            } else {
+                // Distância média: mistura
+                if (roll < 0.3) {
+                    this._botAction = 'approach';
+                } else if (roll < 0.55) {
+                    this._botAction = 'attack';
+                } else if (roll < 0.65) {
+                    this._botAction = 'jump';
+                } else {
+                    this._botAction = 'idle';
+                }
+            }
+        }
+
+        // Limpar teclas virtuais do bot
+        const bc = this.controls;
+        keys[bc.left]    = false;
+        keys[bc.right]   = false;
+        keys[bc.jump]    = false;
+        keys[bc.attack]  = false;
+        keys[bc.attack2] = false;
+        keys[bc.special] = false;
+        keys[bc.shield]  = false;
+
+        // Determinar direção para o player
+        const goRight = (target.x + target.width / 2) > (this.x + this.width / 2);
+
+        // Executar ação
+        switch (this._botAction) {
+            case 'approach':
+                keys[goRight ? bc.right : bc.left] = true;
+                // Pular obstáculos aleatoriamente
+                if (onGround && Math.random() < 0.015) keys[bc.jump] = true;
+                break;
+
+            case 'attack':
+                // Andar um pouco mais perto se necessário
+                if (dist > 160) {
+                    keys[goRight ? bc.right : bc.left] = true;
+                }
+                if (!this.attackKeyHeld && this.attackCooldown === 0 && !this.isAttacking) {
+                    keys[bc.attack] = true;
+                }
+                break;
+
+            case 'heavy':
+                if (dist > 200) {
+                    keys[goRight ? bc.right : bc.left] = true;
+                }
+                if (!this.attack2KeyHeld && this.attack2Cooldown === 0 && !this.isAttacking) {
+                    keys[bc.attack2] = true;
+                }
+                break;
+
+            case 'ultimate':
+                if (this.energy >= MAX_ENERGY && !this.isAttacking) {
+                    keys[bc.special] = true;
+                }
+                break;
+
+            case 'jump':
+                if (onGround) keys[bc.jump] = true;
+                break;
+
+            case 'idle':
+            default:
+                // Fica parado um momento
+                break;
+        }
+
+        // O bot sempre olha para o player
+        this.facing = goRight ? 1 : -1;
+    }
+
+    // =============================================
+    // UPDATE PRINCIPAL
+    // =============================================
+
     update() {
+
+        // BOT ou player normal
+        if (this.isBot) {
+            this._updateBot();
+        }
+
+        // No mobile, P1 usa MOBILE_KEYS
+        const ctrl = this.controls;
 
         this.velX = 0;
 
-        if (keys[this.controls.left])  { this.velX = -PLAYER_SPEED; this.facing = -1; }
-        if (keys[this.controls.right]) { this.velX =  PLAYER_SPEED; this.facing =  1; }
+        if (keys[ctrl.left])  { this.velX = -PLAYER_SPEED; this.facing = -1; }
+        if (keys[ctrl.right]) { this.velX =  PLAYER_SPEED; this.facing =  1; }
 
         this.x += this.velX;
 
-        if (this.x < 0)                         this.x = 0;
-        if (this.x + this.width > CANVAS_WIDTH)  this.x = CANVAS_WIDTH - this.width;
+        if (this.x < 0)                        this.x = 0;
+        if (this.x + this.width > CANVAS_WIDTH) this.x = CANVAS_WIDTH - this.width;
 
         this.velY += GRAVITY;
         this.y    += this.velY;
@@ -84,7 +209,7 @@ class Fighter {
             this.velY = 0;
         }
 
-        const jumpKeyDown = keys[this.controls.jump];
+        const jumpKeyDown = keys[ctrl.jump];
         if (jumpKeyDown && !this.jumpKeyHeld && this.velY === 0) {
             this.velY        = JUMP_FORCE;
             this.jumpKeyHeld = true;
@@ -94,24 +219,23 @@ class Fighter {
         if (this.attackCooldown  > 0) this.attackCooldown--;
         if (this.attack2Cooldown > 0) this.attack2Cooldown--;
 
-        // escudo ativo enquanto tecla segurada e não estiver atacando
-        this.isShielding = !!(keys[this.controls.shield]) && !this.isAttacking;
+        this.isShielding = !!(keys[ctrl.shield]) && !this.isAttacking;
 
-        const attackKeyDown = keys[this.controls.attack];
+        const attackKeyDown = keys[ctrl.attack];
         if (attackKeyDown && !this.attackKeyHeld && this.attackCooldown === 0 && !this.isAttacking && !this.isShielding) {
             this.attack();
             this.attackKeyHeld = true;
         }
         if (!attackKeyDown) this.attackKeyHeld = false;
 
-        const attack2KeyDown = keys[this.controls.attack2];
+        const attack2KeyDown = keys[ctrl.attack2];
         if (attack2KeyDown && !this.attack2KeyHeld && this.attack2Cooldown === 0 && !this.isAttacking && !this.isShielding) {
             this.attack2();
             this.attack2KeyHeld = true;
         }
         if (!attack2KeyDown) this.attack2KeyHeld = false;
 
-        if (keys[this.controls.special] && this.energy >= MAX_ENERGY && !this.isShielding) {
+        if (keys[ctrl.special] && this.energy >= MAX_ENERGY && !this.isShielding) {
             this.useUltimate();
         }
 
@@ -149,7 +273,6 @@ class Fighter {
         }
         ctx.restore();
 
-        // golpe rápido
         if (this.attackBox.active && !this.isUsingUltimate) {
             ctx.save();
             if (this.facing === -1) {
@@ -161,7 +284,6 @@ class Fighter {
             ctx.restore();
         }
 
-        // golpe pesado
         if (this.attack2Box.active) {
             ctx.save();
             ctx.globalAlpha = 0.85;
@@ -175,7 +297,6 @@ class Fighter {
             ctx.restore();
         }
 
-        // ultimate
         if (this.attackBox.active && this.isUsingUltimate) {
             const progress = Math.min(1, this.ultimateAge / 15);
             const pulse    = 1 + Math.sin(this.ultimateAge * 0.4) * 0.08;
@@ -198,7 +319,6 @@ class Fighter {
             ctx.restore();
         }
 
-        // escudo (bolha)
         if (this.isShielding && shieldImage.complete && shieldImage.naturalWidth > 0) {
             const shieldSize = Math.max(this.width, this.height) * 1.3;
             const sx = this.x + this.width  / 2 - shieldSize / 2;
@@ -207,6 +327,16 @@ class Fighter {
             ctx.save();
             ctx.globalAlpha = 0.55;
             ctx.drawImage(shieldImage, sx, sy, shieldSize, shieldSize);
+            ctx.restore();
+        }
+
+        // Label BOT
+        if (this.isBot) {
+            ctx.save();
+            ctx.fillStyle = 'rgba(255,100,100,0.85)';
+            ctx.font      = 'bold 14px monospace';
+            ctx.textAlign = 'center';
+            ctx.fillText('BOT', this.x + this.width / 2, this.y - 8);
             ctx.restore();
         }
     }
@@ -254,19 +384,11 @@ class Fighter {
         }, 500);
     }
 
-    // ======================
-    // DANO — com dreno de energia ao bloquear
-    // ======================
-
     takeDamage(dmg) {
-
         let danoFinal = dmg;
 
         if (this.isShielding) {
-            // escudo absorve 70% — só 30% passa
             danoFinal = Math.max(1, Math.ceil(dmg * 0.30));
-
-            // ← NOVO: bloquear custa 5% da energia máxima por golpe
             this.energy = Math.max(0, this.energy - MAX_ENERGY * 0.05);
         }
 
@@ -278,4 +400,3 @@ class Fighter {
         this.energy = Math.min(MAX_ENERGY, this.energy + amount);
     }
 }
-
