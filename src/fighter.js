@@ -100,7 +100,13 @@ if (keys[this.controls.right] || mobileRight) {
             this.velY = 0;
         }
 
-        const jumpKeyDown = keys[this.controls.jump];
+        const jumpKeyDown =
+keys[this.controls.jump] ||
+(
+    IS_MOBILE &&
+    this.controls === PLAYER1_KEYS &&
+    MOBILE_UI.buttons.jump
+);
         if (jumpKeyDown && !this.jumpKeyHeld && this.velY === 0) {
             this.velY        = JUMP_FORCE;
             this.jumpKeyHeld = true;
@@ -111,23 +117,55 @@ if (keys[this.controls.right] || mobileRight) {
         if (this.attack2Cooldown > 0) this.attack2Cooldown--;
 
         // escudo ativo enquanto tecla segurada e não estiver atacando
-        this.isShielding = !!(keys[this.controls.shield]) && !this.isAttacking;
+       this.isShielding =
+(
+    keys[this.controls.shield] ||
+    (
+        IS_MOBILE &&
+        this.controls === PLAYER1_KEYS &&
+        MOBILE_UI.buttons.shield
+    )
+)
+&& !this.isAttacking;
 
-        const attackKeyDown = keys[this.controls.attack];
+        const attackKeyDown =
+keys[this.controls.attack] ||
+(
+    IS_MOBILE &&
+    this.controls === PLAYER1_KEYS &&
+    MOBILE_UI.buttons.attack
+);
         if (attackKeyDown && !this.attackKeyHeld && this.attackCooldown === 0 && !this.isAttacking && !this.isShielding) {
             this.attack();
             this.attackKeyHeld = true;
         }
         if (!attackKeyDown) this.attackKeyHeld = false;
 
-        const attack2KeyDown = keys[this.controls.attack2];
+        const attack2KeyDown =
+keys[this.controls.attack2] ||
+(
+    IS_MOBILE &&
+    this.controls === PLAYER1_KEYS &&
+    MOBILE_UI.buttons.attack2
+);
         if (attack2KeyDown && !this.attack2KeyHeld && this.attack2Cooldown === 0 && !this.isAttacking && !this.isShielding) {
             this.attack2();
             this.attack2KeyHeld = true;
         }
         if (!attack2KeyDown) this.attack2KeyHeld = false;
 
-        if (keys[this.controls.special] && this.energy >= MAX_ENERGY && !this.isShielding) {
+if (
+(
+    keys[this.controls.special] ||
+    (
+        IS_MOBILE &&
+        this.controls === PLAYER1_KEYS &&
+        MOBILE_UI.buttons.special
+    )
+)
+&& this.energy >= MAX_ENERGY
+&& !this.isShielding
+) {
             this.useUltimate();
         }
 
