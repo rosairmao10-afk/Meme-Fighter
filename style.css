@@ -1,5 +1,5 @@
 body {
-    background: #1a1a1a;
+    background: #0a0a12;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -8,18 +8,224 @@ body {
     overflow: hidden;
 }
 
+/* Gradiente animado de fundo */
+body::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background:
+        radial-gradient(ellipse at 20% 50%, rgba(68, 0, 120, 0.15) 0%, transparent 60%),
+        radial-gradient(ellipse at 80% 50%, rgba(0, 80, 180, 0.12) 0%, transparent 60%);
+    pointer-events: none;
+}
+
+/* Wrapper para o efeito de borda completa */
+#canvas-wrapper {
+    position: relative;
+    display: inline-block;
+    border-radius: 6px;
+}
+
+/* Borda animada com gradiente */
+#canvas-wrapper::before {
+    content: '';
+    position: absolute;
+    inset: -3px;
+    border-radius: 9px;
+    background: linear-gradient(
+        var(--angle, 0deg),
+        #ff0044, #ff6600, #ffcc00, #00ffaa, #0088ff, #aa00ff, #ff0044
+    );
+    animation: rotateBorder 4s linear infinite;
+    z-index: 0;
+}
+
+/* Glow atrás da borda */
+#canvas-wrapper::after {
+    content: '';
+    position: absolute;
+    inset: -6px;
+    border-radius: 12px;
+    background: linear-gradient(
+        var(--angle, 0deg),
+        #ff004466, #ff660066, #ffcc0066, #00ffaa66, #0088ff66, #aa00ff66, #ff004466
+    );
+    animation: rotateBorder 4s linear infinite;
+    filter: blur(8px);
+    z-index: -1;
+}
+
+@property --angle {
+    syntax: '<angle>';
+    inherits: false;
+    initial-value: 0deg;
+}
+
+@keyframes rotateBorder {
+    to { --angle: 360deg; }
+}
+
 canvas {
+    display: block;
     width: 900px;
     height: 500px;
+    position: relative;
+    z-index: 1;
+    border-radius: 4px;
+    background: #000;
+}
 
-    border: 4px solid #333;
+/* ===================== */
+/* CONTROLES MOBILE      */
+/* ===================== */
 
-    background: linear-gradient(
-        to bottom,
-        #2c3e50,
-        #000000
-    );
+#mobile-controls {
+    display: none;
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 180px;
+    pointer-events: none;
+    z-index: 100;
+    user-select: none;
+    -webkit-user-select: none;
+}
 
-    box-shadow:
-        0 0 20px rgba(0,0,0,0.5);
+#mobile-controls.active {
+    display: block;
+}
+
+/* Joystick */
+#joystick-zone {
+    position: absolute;
+    left: 20px;
+    bottom: 20px;
+    width: 140px;
+    height: 140px;
+    pointer-events: all;
+}
+
+#joystick-base {
+    position: absolute;
+    inset: 0;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.08);
+    border: 2px solid rgba(255,255,255,0.25);
+}
+
+#joystick-knob {
+    position: absolute;
+    width: 52px;
+    height: 52px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.35);
+    border: 2px solid rgba(255,255,255,0.6);
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    transition: none;
+}
+
+/* Botão de pulo (cima, separado) */
+#btn-jump {
+    position: absolute;
+    left: 170px;
+    bottom: 100px;
+    width: 56px;
+    height: 56px;
+    border-radius: 50%;
+    background: rgba(100,200,255,0.25);
+    border: 2px solid rgba(100,200,255,0.7);
+    pointer-events: all;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 22px;
+    color: rgba(100,200,255,0.9);
+    font-family: monospace;
+    font-weight: bold;
+}
+
+/* Botões de ação (direita) */
+#action-buttons {
+    position: absolute;
+    right: 20px;
+    bottom: 20px;
+    width: 180px;
+    height: 140px;
+    pointer-events: all;
+}
+
+.mobile-btn {
+    position: absolute;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: monospace;
+    font-weight: bold;
+    font-size: 11px;
+    text-align: center;
+    border: 2px solid;
+    pointer-events: all;
+    touch-action: manipulation;
+    -webkit-tap-highlight-color: transparent;
+    transition: opacity 0.1s;
+    line-height: 1.2;
+}
+
+.mobile-btn:active { opacity: 0.6; }
+
+#btn-attack {
+    width: 62px; height: 62px;
+    right: 0; bottom: 0;
+    background: rgba(255,68,68,0.25);
+    border-color: rgba(255,68,68,0.8);
+    color: rgba(255,100,100,0.95);
+}
+
+#btn-heavy {
+    width: 58px; height: 58px;
+    right: 70px; bottom: 0;
+    background: rgba(255,153,0,0.25);
+    border-color: rgba(255,153,0,0.8);
+    color: rgba(255,180,50,0.95);
+}
+
+#btn-shield {
+    width: 54px; height: 54px;
+    right: 0; bottom: 70px;
+    background: rgba(68,170,255,0.25);
+    border-color: rgba(68,170,255,0.8);
+    color: rgba(100,180,255,0.95);
+}
+
+#btn-ult {
+    width: 58px; height: 58px;
+    right: 65px; bottom: 65px;
+    background: rgba(255,204,0,0.25);
+    border-color: rgba(255,204,0,0.8);
+    color: rgba(255,215,50,0.95);
+}
+
+/* Landscape obrigatório no mobile */
+#rotate-msg {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: #000;
+    z-index: 9999;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    color: white;
+    font-family: monospace;
+    font-size: 20px;
+    text-align: center;
+    gap: 16px;
+}
+
+@media (max-width: 900px) and (orientation: portrait) {
+    #rotate-msg { display: flex; }
 }
