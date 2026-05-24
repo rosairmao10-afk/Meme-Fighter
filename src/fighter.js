@@ -68,9 +68,25 @@ class Fighter {
 
         this.velX = 0;
 
-        if (keys[this.controls.left])  { this.velX = -PLAYER_SPEED; this.facing = -1; }
-        if (keys[this.controls.right]) { this.velX =  PLAYER_SPEED; this.facing =  1; }
+        const mobileLeft =
+IS_MOBILE &&
+this.controls === PLAYER1_KEYS &&
+MOBILE_UI.joystick.dx < -20;
 
+const mobileRight =
+IS_MOBILE &&
+this.controls === PLAYER1_KEYS &&
+MOBILE_UI.joystick.dx > 20;
+
+if (keys[this.controls.left] || mobileLeft) {
+    this.velX = -PLAYER_SPEED;
+    this.facing = -1;
+}
+
+if (keys[this.controls.right] || mobileRight) {
+    this.velX = PLAYER_SPEED;
+    this.facing = 1;
+}
         this.x += this.velX;
 
         if (this.x < 0)                         this.x = 0;
