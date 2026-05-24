@@ -171,7 +171,9 @@ function drawHUD(ctx, p1, p2) {
 
     ctx.fillStyle = '#000000';
     ctx.font      = '11px monospace';
+    if (!IS_MOBILE) {
     ctx.fillText('A/D MOV | W PUL | F PES | R LEV | G ULT | E ESCUDO', 20, 95);
+}
 
     drawBar(ctx, CANVAS_WIDTH - 320, 30, 300, 25, p2.hp / MAX_HP, '#ff4444');
     drawBar(ctx, CANVAS_WIDTH - 240, 65, 220, 12, p2.energy / MAX_ENERGY, '#ffcc00');
@@ -183,7 +185,9 @@ function drawHUD(ctx, p1, p2) {
 
     ctx.fillStyle = '#000000';
     ctx.font      = '11px monospace';
+    if (!IS_MOBILE) {
     ctx.fillText('←/→ MOV | ↑ PUL | L PES | P LEV | K ULT | O ESCUDO', CANVAS_WIDTH - 20, 95);
+}
 
     ctx.textAlign = 'left';
 }
