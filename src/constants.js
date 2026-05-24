@@ -121,5 +121,30 @@ const CHARACTERS = [
             defesa:      500,
             dificuldade: 4
         }
+
+        // ======================
+// MOBILE
+// ======================
+
+const IS_MOBILE =
+/Android|iPhone|iPad|iPod|Opera Mini|IEMobile|Mobile/i.test(navigator.userAgent);
+
+const MOBILE_UI = {
+    joystick:{
+        active:false,
+        startX:0,
+        startY:0,
+        dx:0,
+        dy:0
+    },
+
+    buttons:{
+        jump:false,
+        attack:false,
+        attack2:false,
+        special:false,
+        shield:false
+    }
+};
     }
 ];
