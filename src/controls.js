@@ -18,8 +18,8 @@ const PLAYER1_KEYS = {
     left:    'KeyA',
     right:   'KeyD',
     jump:    'KeyW',
-    attack:  'KeyR',
-    attack2: 'KeyF',
+    attack:  'KeyR',    // golpe LEVE
+    attack2: 'KeyF',    // golpe PESADO
     special: 'KeyG',
     shield:  'KeyE'
 };
@@ -28,8 +28,8 @@ const PLAYER2_KEYS = {
     left:    'ArrowLeft',
     right:   'ArrowRight',
     jump:    'ArrowUp',
-    attack:  'KeyP',
-    attack2: 'KeyL',
+    attack:  'KeyP',    // golpe LEVE
+    attack2: 'KeyL',    // golpe PESADO
     special: 'KeyK',
     shield:  'KeyO'
 };
@@ -42,24 +42,24 @@ const mobileInput = {
     left:    false,
     right:   false,
     jump:    false,
-    attack:  false,
-    attack2: false,
+    attack:  false,   // golpe LEVE
+    attack2: false,   // golpe PESADO
     special: false,
     shield:  false
 };
 
-// Chaves virtuais que mapeiam para PLAYER1_KEYS no mobile
+// Chaves virtuais que mapeiam para o Fighter via MOBILE_KEYS
 const MOBILE_KEYS = {
     left:    'MobileLeft',
     right:   'MobileRight',
     jump:    'MobileJump',
-    attack:  'MobileAttack',
-    attack2: 'MobileHeavy',
+    attack:  'MobileAttack',   // golpe LEVE
+    attack2: 'MobileHeavy',    // golpe PESADO
     special: 'MobileUlt',
     shield:  'MobileShield'
 };
 
-// Injetar estado mobile no sistema de keys
+// Injetar estado mobile no sistema de keys a cada frame
 function syncMobileKeys() {
     if (!isMobile) return;
     keys['MobileLeft']   = mobileInput.left;
@@ -72,7 +72,7 @@ function syncMobileKeys() {
 }
 
 // ============================================
-// JOYSTICK VIRTUAL
+// INICIALIZAR CONTROLES MOBILE
 // ============================================
 
 function initMobileControls() {
@@ -80,8 +80,8 @@ function initMobileControls() {
 
     const joystickZone = document.getElementById('joystick-zone');
     const knob         = document.getElementById('joystick-knob');
-    const BASE_R       = 70; // raio da base
-    const DEAD_ZONE    = 12; // pixels mínimos para ativar direção
+    const BASE_R       = 74;
+    const DEAD_ZONE    = 13;
 
     let joystickActive = false;
     let joystickId     = null;
@@ -104,7 +104,6 @@ function initMobileControls() {
     joystickZone.addEventListener('touchmove', e => {
         e.preventDefault();
         if (!joystickActive) return;
-
         let touch = null;
         for (let t of e.changedTouches) {
             if (t.identifier === joystickId) { touch = t; break; }
@@ -115,16 +114,12 @@ function initMobileControls() {
         const dy = touch.clientY - baseY;
         const dist = Math.min(Math.sqrt(dx*dx + dy*dy), BASE_R);
         const angle = Math.atan2(dy, dx);
-
-        // Posicionar knob
         const kx = Math.cos(angle) * dist;
         const ky = Math.sin(angle) * dist;
         knob.style.transform = `translate(calc(-50% + ${kx}px), calc(-50% + ${ky}px))`;
 
-        // Ativar direções
         mobileInput.left  = dx < -DEAD_ZONE;
         mobileInput.right = dx >  DEAD_ZONE;
-
     }, { passive: false });
 
     function resetJoystick() {
@@ -138,59 +133,74 @@ function initMobileControls() {
     joystickZone.addEventListener('touchcancel', e => { e.preventDefault(); resetJoystick(); }, { passive: false });
 
     // ============================================
-    // BOTÃO DE PULO
+    // BIND DE BOTÃO QUE PRECISA SER SEGURADO
+    // (ataque, escudo, ultimate)
     // ============================================
 
-    const btnJump = document.getElementById('btn-jump');
-    let jumpActive = false;
-
-    btnJump.addEventListener('touchstart', e => {
-        e.preventDefault();
-        if (!jumpActive) {
-            jumpActive = true;
-            mobileInput.jump = true;
-            // Libera o jump no próximo frame para simular keydown
-            setTimeout(() => {
-                mobileInput.jump = false;
-                jumpActive = false;
-            }, 80);
-        }
-    }, { passive: false });
-
-    // ============================================
-    // BOTÕES DE AÇÃO
-    // ============================================
-
-    function bindActionBtn(id, field) {
+    function bindHoldBtn(id, field) {
         const btn = document.getElementById(id);
         if (!btn) return;
-
         btn.addEventListener('touchstart', e => {
             e.preventDefault();
+            btn.classList.add('pressed');
             mobileInput[field] = true;
         }, { passive: false });
-
         btn.addEventListener('touchend', e => {
             e.preventDefault();
+            btn.classList.remove('pressed');
             mobileInput[field] = false;
         }, { passive: false });
-
         btn.addEventListener('touchcancel', e => {
             e.preventDefault();
+            btn.classList.remove('pressed');
             mobileInput[field] = false;
         }, { passive: false });
     }
 
-    // btn-attack  → ataque LEVE  (attack  = KeyR no PC)
-    // btn-heavy   → ataque PESADO (attack2 = KeyF no PC)
-    bindActionBtn('btn-attack', 'attack');
-    bindActionBtn('btn-heavy',  'attack2');
-    bindActionBtn('btn-shield', 'shield');
-    bindActionBtn('btn-ult',    'special');
+    // ============================================
+    // BIND DO BOTÃO PULAR (pulso curto)
+    // ============================================
+
+    function bindJumpBtn(id) {
+        const btn = document.getElementById(id);
+        if (!btn) return;
+        let active = false;
+        btn.addEventListener('touchstart', e => {
+            e.preventDefault();
+            btn.classList.add('pressed');
+            if (!active) {
+                active = true;
+                mobileInput.jump = true;
+                setTimeout(() => {
+                    mobileInput.jump = false;
+                    active = false;
+                    btn.classList.remove('pressed');
+                }, 90);
+            }
+        }, { passive: false });
+        btn.addEventListener('touchend',   e => { e.preventDefault(); }, { passive: false });
+        btn.addEventListener('touchcancel',e => { e.preventDefault(); btn.classList.remove('pressed'); }, { passive: false });
+    }
+
+    // ============================================
+    // MAPEAMENTO DEFINITIVO:
+    //
+    //  btn-heavy  → attack2 → fighter.attack2() → GOLPE PESADO (F no PC)
+    //  btn-attack → attack  → fighter.attack()  → GOLPE LEVE   (R no PC)
+    //  btn-shield → shield
+    //  btn-ult    → special
+    //  btn-jump   → jump (pulso)
+    // ============================================
+
+    bindHoldBtn('btn-heavy',  'attack2');   // ATQ PESADO
+    bindHoldBtn('btn-attack', 'attack');    // ATQ LEVE
+    bindHoldBtn('btn-shield', 'shield');
+    bindHoldBtn('btn-ult',    'special');
+    bindJumpBtn('btn-jump');
 }
 
 // ============================================
-// MOSTRAR/ESCONDER CONTROLES MOBILE NA LUTA
+// MOSTRAR/ESCONDER PAINEL MOBILE
 // ============================================
 
 function showMobileControls(show) {
