@@ -9,54 +9,52 @@
 </head>
 <body>
 
-    <!-- Canvas com borda animada -->
     <div id="canvas-wrapper">
         <canvas id="game" width="1280" height="720"></canvas>
     </div>
 
     <!--
-        PAINEL DE CONTROLES MOBILE
-        Aparece ABAIXO do canvas quando está em luta.
-        Celular em pé (portrait) — botões grandes estilo retrô.
+        PAINEL MOBILE — layout igual à imagem:
 
-        LAYOUT:
-          Esquerda: Joystick + Pulo
-          Direita:  ATQ LEVE | ATQ PESADO
-                    ESCUDO   | ULTIMATE
+        ESQUERDA:
+          [ESCUDO]   ← canto superior esquerdo
+          [JOYSTICK] ← centro-baixo
+
+        DIREITA:
+          [ATQ PESADO] [ATQ LEVE]
+          [ULTIMATE  ] [PULAR   ]
     -->
     <div id="mobile-controls">
 
-        <!-- Painel esquerdo -->
         <div id="left-panel">
+            <div id="btn-shield" class="mobile-btn btn-round">
+                <span class="btn-icon">🛡</span>
+                <span class="btn-label">ESCUDO</span>
+            </div>
             <div id="joystick-zone">
                 <div id="joystick-base"></div>
                 <div id="joystick-knob"></div>
             </div>
-            <div id="btn-jump">
-                <span class="btn-icon">↑</span>
-                <span>PULAR</span>
-            </div>
         </div>
 
-        <!-- Painel direito: 2x2 -->
         <div id="right-panel">
             <!-- linha de cima -->
-            <div id="btn-attack" class="mobile-btn">
-                <span class="btn-icon">⚡</span>
-                <span>ATQ<br>LEVE</span>
-            </div>
-            <div id="btn-heavy" class="mobile-btn">
+            <div id="btn-heavy" class="mobile-btn btn-round">
                 <span class="btn-icon">💥</span>
-                <span>ATQ<br>PESADO</span>
+                <span class="btn-label">ATQ<br>PESADO</span>
+            </div>
+            <div id="btn-attack" class="mobile-btn btn-round">
+                <span class="btn-icon">⚡</span>
+                <span class="btn-label">ATQ<br>LEVE</span>
             </div>
             <!-- linha de baixo -->
-            <div id="btn-shield" class="mobile-btn">
-                <span class="btn-icon">🛡</span>
-                <span>ESCUDO</span>
-            </div>
-            <div id="btn-ult" class="mobile-btn">
+            <div id="btn-ult" class="mobile-btn btn-round">
                 <span class="btn-icon">★</span>
-                <span>ULTIMATE</span>
+                <span class="btn-label">ULTIMATE</span>
+            </div>
+            <div id="btn-jump" class="mobile-btn btn-rect">
+                <span class="btn-icon btn-icon-small">↑</span>
+                <span class="btn-label">PULAR</span>
             </div>
         </div>
 
