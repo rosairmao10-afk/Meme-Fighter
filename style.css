@@ -1,9 +1,15 @@
+/* ===================== */
+/* BASE                  */
+/* ===================== */
+
+* { box-sizing: border-box; }
+
 body {
     background: #0a0a12;
     display: flex;
     flex-direction: column;
-    justify-content: center;
     align-items: center;
+    justify-content: center;
     min-height: 100vh;
     margin: 0;
     overflow: hidden;
@@ -14,16 +20,20 @@ body::before {
     position: absolute;
     inset: 0;
     background:
-        radial-gradient(ellipse at 20% 50%, rgba(68, 0, 120, 0.15) 0%, transparent 60%),
-        radial-gradient(ellipse at 80% 50%, rgba(0, 80, 180, 0.12) 0%, transparent 60%);
+        radial-gradient(ellipse at 20% 50%, rgba(68,0,120,0.15) 0%, transparent 60%),
+        radial-gradient(ellipse at 80% 50%, rgba(0,80,180,0.12) 0%, transparent 60%);
     pointer-events: none;
 }
 
-/* Wrapper com borda animada */
+/* ===================== */
+/* CANVAS + BORDA ANIMADA */
+/* ===================== */
+
 #canvas-wrapper {
     position: relative;
-    display: inline-block;
+    display: block;
     border-radius: 6px;
+    flex-shrink: 0;
 }
 
 #canvas-wrapper::before {
@@ -33,7 +43,7 @@ body::before {
     border-radius: 9px;
     background: linear-gradient(
         var(--angle, 0deg),
-        #ff0044, #ff6600, #ffcc00, #00ffaa, #0088ff, #aa00ff, #ff0044
+        #ff0044,#ff6600,#ffcc00,#00ffaa,#0088ff,#aa00ff,#ff0044
     );
     animation: rotateBorder 4s linear infinite;
     z-index: 0;
@@ -46,7 +56,7 @@ body::before {
     border-radius: 12px;
     background: linear-gradient(
         var(--angle, 0deg),
-        #ff004466, #ff660066, #ffcc0066, #00ffaa66, #0088ff66, #aa00ff66, #ff004466
+        #ff004466,#ff660066,#ffcc0066,#00ffaa66,#0088ff66,#aa00ff66,#ff004466
     );
     animation: rotateBorder 4s linear infinite;
     filter: blur(8px);
@@ -73,33 +83,23 @@ canvas {
     background: #000;
 }
 
-/* ===================================== */
-/* MOBILE — PORTRAIT (celular em pé)     */
-/* ===================================== */
+/* =============================== */
+/* MOBILE — canvas em portrait     */
+/* =============================== */
 
-/* No mobile, o canvas ocupa toda a largura */
 @media (max-width: 768px) {
     body {
         justify-content: flex-start;
-        overflow-y: auto;
-        background: #000;
+        background: #0d0d18;
+        overflow-y: hidden;
     }
 
     #canvas-wrapper {
         width: 100vw;
-        display: block;
         border-radius: 0;
     }
-
-    /* Borda animada adaptada para mobile */
-    #canvas-wrapper::before {
-        inset: -2px;
-        border-radius: 0;
-    }
-    #canvas-wrapper::after {
-        inset: -5px;
-        border-radius: 0;
-    }
+    #canvas-wrapper::before { inset: -2px; border-radius: 0; }
+    #canvas-wrapper::after  { inset: -4px; border-radius: 0; }
 
     canvas {
         width: 100vw !important;
@@ -109,46 +109,44 @@ canvas {
     }
 }
 
-/* ===================================== */
-/* PAINEL DE CONTROLES MOBILE            */
-/* ===================================== */
+/* =============================== */
+/* PAINEL DE CONTROLES MOBILE      */
+/* =============================== */
 
 #mobile-controls {
-    display: none;
+    display: none;              /* escondido por padrão; JS ativa com .active */
     width: 100vw;
     background: #0d0d18;
-    border-top: 2px solid #333;
-    padding: 10px 0 16px;
-    box-sizing: border-box;
-    position: relative;
-    flex-shrink: 0;
-    /* grade: joystick à esq, botões de ação à dir */
+    border-top: 1.5px solid #222;
     flex-direction: row;
     align-items: center;
     justify-content: space-between;
+    padding: 14px 20px 18px;
     gap: 0;
-    /* altura do painel */
-    min-height: 220px;
+    /* altura fixa para caber abaixo do canvas */
+    min-height: 230px;
 }
 
 #mobile-controls.active {
     display: flex;
 }
 
-/* ---- LADO ESQUERDO: joystick + pulo ---- */
+/* ---------- PAINEL ESQUERDO ---------- */
+/* ESCUDO em cima, joystick em baixo     */
+
 #left-panel {
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 10px;
-    padding-left: 18px;
-    width: 48%;
+    gap: 12px;
+    width: 46%;
 }
 
-/* Joystick */
+/* ---------- JOYSTICK ---------- */
+
 #joystick-zone {
-    width: 140px;
-    height: 140px;
+    width: 130px;
+    height: 130px;
     position: relative;
     touch-action: none;
 }
@@ -157,121 +155,128 @@ canvas {
     position: absolute;
     inset: 0;
     border-radius: 50%;
-    background: rgba(255,255,255,0.07);
-    border: 2px solid rgba(255,255,255,0.22);
+    background: radial-gradient(circle at 38% 38%, #2a2a3a, #13131f);
+    border: 2px solid #333;
+    box-shadow: 0 0 0 4px #1a1a28, inset 0 2px 8px rgba(0,0,0,0.6);
 }
 
 #joystick-knob {
     position: absolute;
-    width: 54px;
-    height: 54px;
+    width: 52px;
+    height: 52px;
     border-radius: 50%;
-    background: rgba(255,255,255,0.30);
-    border: 2px solid rgba(255,255,255,0.6);
+    background: radial-gradient(circle at 38% 35%, #888, #444);
+    border: 2px solid #666;
+    box-shadow: 0 3px 8px rgba(0,0,0,0.7);
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
 }
 
-/* Botão pulo — abaixo do joystick, grande */
-#btn-jump {
-    width: 80px;
-    height: 56px;
-    border-radius: 14px;
-    background: rgba(80,200,255,0.18);
-    border: 2px solid rgba(80,200,255,0.75);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    flex-direction: column;
-    font-family: monospace;
-    font-weight: bold;
-    font-size: 22px;
-    color: rgba(130,210,255,0.95);
-    touch-action: manipulation;
-    -webkit-tap-highlight-color: transparent;
-    user-select: none;
-    gap: 2px;
-}
+/* ---------- PAINEL DIREITO ---------- */
+/* Grid 2x2: [PESADO][LEVE] / [ULT][PULAR] */
 
-#btn-jump span {
-    font-size: 10px;
-    font-weight: normal;
-    opacity: 0.8;
-}
-
-/* ---- LADO DIREITO: botões de ação ---- */
 #right-panel {
     display: grid;
     grid-template-columns: 1fr 1fr;
     grid-template-rows: 1fr 1fr;
-    gap: 10px;
-    padding-right: 18px;
-    width: 48%;
+    gap: 12px;
+    width: 50%;
     justify-items: center;
+    align-items: center;
 }
 
+/* ---------- BOTÕES GERAIS ---------- */
+
 .mobile-btn {
-    width: 85px;
-    height: 85px;
-    border-radius: 50%;
     display: flex;
+    flex-direction: column;
     align-items: center;
     justify-content: center;
-    flex-direction: column;
     font-family: monospace;
     font-weight: bold;
-    font-size: 11px;
     text-align: center;
-    border: 2.5px solid;
     touch-action: manipulation;
     -webkit-tap-highlight-color: transparent;
     user-select: none;
-    line-height: 1.2;
-    gap: 3px;
+    cursor: pointer;
     transition: opacity 0.08s, transform 0.08s;
+    gap: 3px;
 }
 
-.mobile-btn:active {
-    opacity: 0.55;
-    transform: scale(0.93);
-}
-
-.mobile-btn .btn-icon {
-    font-size: 24px;
-    line-height: 1;
-}
-
-/* Ataque LEVE — verde (golpe rápido, tecla R) */
-#btn-attack {
-    background: rgba(68,220,68,0.20);
-    border-color: rgba(68,220,68,0.85);
-    color: rgba(100,240,100,0.95);
-}
-
-/* Ataque PESADO — laranja (golpe forte, tecla F) */
-#btn-heavy {
-    background: rgba(255,140,0,0.20);
-    border-color: rgba(255,140,0,0.85);
-    color: rgba(255,170,50,0.95);
-}
-
-/* Escudo — azul */
-#btn-shield {
-    background: rgba(68,140,255,0.20);
-    border-color: rgba(68,140,255,0.85);
-    color: rgba(120,180,255,0.95);
-}
-
-/* Ultimate — dourado */
-#btn-ult {
-    background: rgba(255,204,0,0.20);
-    border-color: rgba(255,204,0,0.85);
-    color: rgba(255,220,60,0.95);
-}
-
-/* Efeito "pressionado" nos botões */
+.mobile-btn:active,
 .mobile-btn.pressed {
     opacity: 0.5;
-    transform: scale(0.91);
+    transform: scale(0.90);
+}
+
+/* Redondo (padrão para a maioria) */
+.btn-round {
+    width: 82px;
+    height: 82px;
+    border-radius: 50%;
+    border: 3px solid;
+}
+
+/* Retangular (PULAR) */
+.btn-rect {
+    width: 90px;
+    height: 82px;
+    border-radius: 16px;
+    border: 3px solid;
+}
+
+.btn-icon {
+    font-size: 22px;
+    line-height: 1;
+}
+.btn-icon-small {
+    font-size: 18px;
+}
+.btn-label {
+    font-size: 10px;
+    line-height: 1.2;
+    letter-spacing: 0.03em;
+}
+
+/* ---------- CORES POR BOTÃO ---------- */
+
+/* ESCUDO — azul */
+#btn-shield {
+    background: radial-gradient(circle at 38% 35%, #1a3a6a, #0d1e40);
+    border-color: #3a7adf;
+    color: #7ab8ff;
+    box-shadow: 0 0 14px rgba(58,122,223,0.4);
+}
+
+/* ATQ PESADO — laranja/vermelho (igual à imagem) */
+#btn-heavy {
+    background: radial-gradient(circle at 38% 35%, #5a2200, #2e1000);
+    border-color: #cc5500;
+    color: #ff8844;
+    box-shadow: 0 0 14px rgba(204,85,0,0.4);
+}
+
+/* ATQ LEVE — verde (igual à imagem) */
+#btn-attack {
+    background: radial-gradient(circle at 38% 35%, #0a3a0a, #051805);
+    border-color: #22aa22;
+    color: #55ee55;
+    box-shadow: 0 0 14px rgba(34,170,34,0.4);
+}
+
+/* ULTIMATE — dourado */
+#btn-ult {
+    background: radial-gradient(circle at 38% 35%, #4a3800, #221a00);
+    border-color: #cc9900;
+    color: #ffcc00;
+    box-shadow: 0 0 14px rgba(204,153,0,0.4);
+}
+
+/* PULAR — azul-ciano (retangular) */
+#btn-jump {
+    background: radial-gradient(circle at 38% 35%, #0a2a40, #051525);
+    border-color: #2299cc;
+    color: #66ccff;
+    box-shadow: 0 0 14px rgba(34,153,204,0.4);
 }
