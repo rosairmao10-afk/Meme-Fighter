@@ -476,8 +476,8 @@ function drawControls(ctx) {
         const p1Controls = [
             { key: 'A / D', desc: 'Andar'        },
             { key: 'W',     desc: 'Pular'         },
-            { key: 'F',     desc: 'Ataque Pesado' },
-            { key: 'R',     desc: 'Ataque Leve'   },
+            { key: 'F',     desc: 'Ataque Leve' },
+            { key: 'R',     desc: 'Ataque Pesado'   },
             { key: 'G',     desc: 'Ultimate'      },
             { key: 'E',     desc: 'Escudo'        }
         ];
@@ -502,8 +502,8 @@ function drawControls(ctx) {
         const p2Controls = [
             { key: '← / →', desc: 'Andar'        },
             { key: '↑',      desc: 'Pular'         },
-            { key: 'L',      desc: 'Ataque Pesado' },
-            { key: 'P',      desc: 'Ataque Leve'   },
+            { key: 'L',      desc: 'Ataque Leve' },
+            { key: 'P',      desc: 'Ataque Pesado'   },
             { key: 'K',      desc: 'Ultimate'      },
             { key: 'O',      desc: 'Escudo'        }
         ];
